@@ -13,40 +13,6 @@ describe("mailcheck", function() {
     });
 
     describe("run", function () {
-      var suggestedSpy, emptySpy;
-
-      beforeEach(function () {
-        suggestedSpy = jasmine.createSpy();
-        emptySpy = jasmine.createSpy();
-      });
-
-      it("calls the 'suggested' callback with the element and result when there's a suggestion", function () {
-        mailcheck.run({
-          email: 'test@gmail.co',
-          suggested:suggestedSpy,
-          empty:emptySpy
-        });
-
-        expect(suggestedSpy).toHaveBeenCalledWith({
-          address:'test',
-          domain:'gmail.com',
-          full:'test@gmail.com'
-        });
-
-        expect(emptySpy).not.toHaveBeenCalled();
-      });
-
-      it("calls the 'empty' callback with the element when there's no suggestion", function () {
-        mailcheck.run({
-          email: 'contact@kicksend.com',
-          suggested:suggestedSpy,
-          empty:emptySpy
-        });
-
-        expect(suggestedSpy).not.toHaveBeenCalled();
-
-        expect(emptySpy).toHaveBeenCalled();
-      });
 
       it("returns the result when 'suggested' callback is not defined", function () {
         var result = mailcheck.run({
@@ -61,14 +27,12 @@ describe("mailcheck", function() {
       })
 
       it("takes in an array of specified domains", function () {
-        mailcheck.run({
+        var result = mailcheck.run({
           email: 'test@emaildomain.con',
-          suggested:suggestedSpy,
-          empty:emptySpy,
           domains:domains
         });
 
-        expect(suggestedSpy).toHaveBeenCalledWith({
+        expect(result).toEqual({
           address:'test',
           domain:'emaildomain.com',
           full:'test@emaildomain.com'
@@ -99,12 +63,12 @@ describe("mailcheck", function() {
         });
       });
 
-      it("is false when no suggestion is found", function() {
-        expect(mailcheck.suggest('contact@kicksend.com', domains)).toBeFalsy();
+      it("is undefined when no suggestion is found", function() {
+        expect(mailcheck.suggest('contact@kicksend.com', domains)).not.toBeDefined();
       });
 
-      it("is false when an incomplete email is provided", function(){
-        expect(mailcheck.suggest('contact', domains)).toBeFalsy();
+      it("is undefined when an incomplete email is provided", function(){
+        expect(mailcheck.suggest('contact', domains)).not.toBeDefined();
       });
     });
 
@@ -126,15 +90,15 @@ describe("mailcheck", function() {
         // Ensure we do not touch the second level domain when suggesting new top level domain
         expect(mailcheck.suggest('test@con-artists.con', domains, secondLevelDomains, topLevelDomains).domain).toEqual('con-artists.com');
 
-        expect(mailcheck.suggest('', domains)).toBeFalsy();
-        expect(mailcheck.suggest('test@', domains)).toBeFalsy();
-        expect(mailcheck.suggest('test', domains)).toBeFalsy();
+        expect(mailcheck.suggest('', domains)).not.toBeDefined();
+        expect(mailcheck.suggest('test@', domains)).not.toBeDefined();
+        expect(mailcheck.suggest('test', domains)).not.toBeDefined();
 
         /* This test is for illustrative purposes as the splitEmail function should return a better
          * representation of the true top-level domain in the case of an email address with subdomains.
          * mailcheck will be unable to return a suggestion in the case of this email address.
          */
-        expect(mailcheck.suggest('test@mail.randomsmallcompany.cmo', domains, secondLevelDomains, topLevelDomains).domain).toBeFalsy();
+        expect(mailcheck.suggest('test@mail.randomsmallcompany.cmo', domains, secondLevelDomains, topLevelDomains)).not.toBeDefined();
       });
 
       it("will not offer a suggestion that itself leads to another suggestion", function() {
@@ -145,20 +109,20 @@ describe("mailcheck", function() {
       it("will not offer suggestions for valid 2ld-tld combinations", function() {
         expect(
             mailcheck.suggest('test@yahoo.co.uk', domains, secondLevelDomains, topLevelDomains)
-        ).toBeFalsy();
+        ).not.toBeDefined();
       });
 
       it("will not offer suggestions for valid 2ld-tld even if theres a close fully-specified domain", function() {
         expect(
             mailcheck.suggest('test@gmx.fr', domains, secondLevelDomains, topLevelDomains)
-        ).toBeFalsy();
+        ).not.toBeDefined();
       });
 
       it("will not offer suggestions for unrecognised 2ld's without a tld", function() {
-        expect(mailcheck.suggest('test@gm', domains, secondLevelDomains, topLevelDomains)).toBeFalsy();
-        expect(mailcheck.suggest('test@gma', domains, secondLevelDomains, topLevelDomains)).toBeFalsy();
-        expect(mailcheck.suggest('test@gmai', domains, secondLevelDomains, topLevelDomains)).toBeFalsy();
-      });      
+        expect(mailcheck.suggest('test@gm', domains, secondLevelDomains, topLevelDomains)).not.toBeDefined();
+        expect(mailcheck.suggest('test@gma', domains, secondLevelDomains, topLevelDomains)).not.toBeDefined();
+        expect(mailcheck.suggest('test@gmai', domains, secondLevelDomains, topLevelDomains)).not.toBeDefined();
+      });
     });
 
     describe("mailcheck.splitEmail", function () {

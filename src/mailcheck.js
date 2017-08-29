@@ -7,7 +7,7 @@
  *
  * Released under the MIT License.
  *
- * v 1.1.2
+ * v 1.1.3
  */
 
 var Mailcheck = {
@@ -39,14 +39,8 @@ var Mailcheck = {
     opts.topLevelDomains = opts.topLevelDomains || Mailcheck.defaultTopLevelDomains;
     opts.distanceFunction = opts.distanceFunction || Mailcheck.sift4Distance;
 
-    var defaultCallback = function(result){ return result; };
-    var suggestedCallback = opts.suggested || defaultCallback;
-    var emptyCallback = opts.empty || defaultCallback;
-
-    var result = Mailcheck.suggest(Mailcheck.encodeEmail(opts.email), opts.domains, opts.secondLevelDomains, opts.topLevelDomains, opts.distanceFunction);
-
-    return result ? suggestedCallback(result) : emptyCallback();
-  },
+    return Mailcheck.suggest(Mailcheck.encodeEmail(opts.email), opts.domains, opts.secondLevelDomains, opts.topLevelDomains, opts.distanceFunction);
+},
 
   suggest: function(email, domains, secondLevelDomains, topLevelDomains, distanceFunction) {
     email = email.toLowerCase();
@@ -56,7 +50,7 @@ var Mailcheck = {
     if (secondLevelDomains && topLevelDomains) {
         // If the email is a valid 2nd-level + top-level, do not suggest anything.
         if (secondLevelDomains.indexOf(emailParts.secondLevelDomain) !== -1 && topLevelDomains.indexOf(emailParts.topLevelDomain) !== -1) {
-            return false;
+            return undefined;
         }
     }
 
@@ -65,7 +59,7 @@ var Mailcheck = {
     if (closestDomain) {
       if (closestDomain == emailParts.domain) {
         // The email address exactly matches one of the supplied domains; do not return a suggestion.
-        return false;
+        return undefined;
       } else {
         // The email address closely matches one of the supplied domains; return a suggestion
         return { address: emailParts.address, domain: closestDomain, full: emailParts.address + "@" + closestDomain };
@@ -101,7 +95,7 @@ var Mailcheck = {
      * match any domain and does not appear to simply have a mispelled top-level domain,
      * or is an invalid email address; do not return a suggestion.
      */
-    return false;
+    return undefined;
   },
 
   findClosestDomain: function(domain, domains, distanceFunction, threshold) {
@@ -204,10 +198,10 @@ var Mailcheck = {
                 c1=c2=Math.min(c1,c2);  //using min allows the computation of transpositions
             }
             //if matching characters are found, remove 1 from both cursors (they get incremented at the end of the loop)
-            //so that we can have only one code block handling matches 
+            //so that we can have only one code block handling matches
             for (var j = 0; j < maxOffset && (c1+j<l1 || c2+j<l2); j++) {
                 if ((c1 + j < l1) && (s1.charAt(c1 + j) == s2.charAt(c2))) {
-                    c1+= j-1; 
+                    c1+= j-1;
                     c2--;
                     break;
                 }
@@ -302,21 +296,6 @@ if (typeof define === "function" && define.amd) {
 if (typeof window !== 'undefined' && window.jQuery) {
   (function($){
     $.fn.mailcheck = function(opts) {
-      var self = this;
-      if (opts.suggested) {
-        var oldSuggested = opts.suggested;
-        opts.suggested = function(result) {
-          oldSuggested(self, result);
-        };
-      }
-
-      if (opts.empty) {
-        var oldEmpty = opts.empty;
-        opts.empty = function() {
-          oldEmpty.call(null, self);
-        };
-      }
-
       opts.email = this.val();
       Mailcheck.run(opts);
     };
