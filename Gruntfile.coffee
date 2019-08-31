@@ -14,19 +14,7 @@ module.exports = (grunt) ->
         files:
           'src/mailcheck.min.js': 'src/mailcheck.js'
 
-    jasmine_node:
-      specNameMatcher: "spec"
-      requirejs: false
-      forceExit: true
-      jUnit:
-        report: false
-        savePath : "spec"
-        useDotNotation: true
-        consolidate: true
-
   grunt.loadNpmTasks 'grunt-contrib-uglify'
-  grunt.loadNpmTasks 'grunt-jasmine-node'
   grunt.loadNpmTasks 'grunt-contrib-jshint'
 
-  grunt.registerTask 'default', ['jshint', 'jasmine_node', 'uglify']
-  grunt.registerTask 'test', ['jshint', 'jasmine_node']
+  grunt.registerTask 'default', ['jshint', 'uglify']

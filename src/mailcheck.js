@@ -12,8 +12,8 @@
 
 var Mailcheck = {
   domainThreshold: 2,
-  secondLevelThreshold: 2,
-  topLevelThreshold: 2,
+  secondLevelThreshold: 1.5,
+  topLevelThreshold: 1.5,
 
   defaultDomains: ['msn.com', 'bellsouth.net',
     'telus.net', 'comcast.net', 'optusnet.com.au',
@@ -29,7 +29,7 @@ var Mailcheck = {
   defaultSecondLevelDomains: ["yahoo", "hotmail", "mail", "live", "outlook", "gmx"],
 
   defaultTopLevelDomains: ["com", "com.au", "com.tw", "ca", "co.nz", "co.uk", "de",
-    "fr", "it", "ru", "net", "org", "edu", "gov", "jp", "nl", "kr", "se", "eu",
+    "fr", "it", "ru", "net", "org", "org.uk", "edu", "gov", "jp", "nl", "kr", "se", "eu",
     "ie", "co.il", "us", "at", "be", "dk", "hk", "es", "gr", "ch", "no", "cz",
     "in", "net", "net.au", "info", "biz", "mil", "co.jp", "sg", "hu", "uk"],
 
